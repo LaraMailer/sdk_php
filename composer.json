@@ -1,0 +1,15 @@
+{
+    "name": "laramailer/sdk",
+    "description": "PHP SDK for LaraMailer API",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "LaraMailer\\Sdk\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.0"
+    }
+}
