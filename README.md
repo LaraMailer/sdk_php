@@ -12,12 +12,16 @@ composer require laramailer/sdk
 
 ## Usage
 
-Initialize the client with your API token and the base URL of your LaraMailer instance.
+Initialize the client with your API token and the domain of your LaraMailer instance.
 
 ```php
 use LaraMailer\Sdk\Client;
 
-$client = new Client('YOUR_API_TOKEN', 'https://your-laramailer-instance.com/api/v1');
+// Default API version is v1
+$client = new Client('YOUR_API_TOKEN', 'https://your-laramailer-instance.com');
+
+// Or specify a version
+$client = new Client('YOUR_API_TOKEN', 'https://your-laramailer-instance.com', 'v2');
 ```
 
 ### Accounts

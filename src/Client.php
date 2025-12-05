@@ -13,16 +13,18 @@ use LaraMailer\Sdk\Resources\OAuth2;
 class Client
 {
     protected GuzzleClient $httpClient;
-    protected string $baseUrl;
+    protected string $domain;
+    protected string $apiVersion;
     protected string $apiToken;
 
-    public function __construct(string $apiToken, string $baseUrl = 'http://localhost/api/v1')
+    public function __construct(string $apiToken, string $domain = 'http://localhost', string $apiVersion = 'v1')
     {
         $this->apiToken = $apiToken;
-        $this->baseUrl = rtrim($baseUrl, '/');
+        $this->domain = rtrim($domain, '/');
+        $this->apiVersion = $apiVersion;
         
         $this->httpClient = new GuzzleClient([
-            'base_uri' => $this->baseUrl . '/',
+            'base_uri' => $this->domain . "/api/{$this->apiVersion}/",
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->apiToken,
                 'Accept' => 'application/json',
