@@ -6,23 +6,25 @@ use LaraMailer\Sdk\Client;
 
 class Mail
 {
-    protected Client $client;
+    public function __construct(protected Client $client) {}
 
-    public function __construct(Client $client)
+    public function send(int $accountId, array $data, ?string $idempotencyKey = null): array
     {
-        $this->client = $client;
+        $options = ['json' => $data];
+
+        if ($idempotencyKey !== null) {
+            $options['headers'] = ['Idempotency-Key' => $idempotencyKey];
+        }
+
+        return $this->client->request('POST', "send-mail/{$accountId}", $options);
     }
 
-    public function send(int $accountId, array $data): array
+    /**
+     * @param array{status?: string, since?: string, metadata?: array<string, scalar>, per_page?: int, page?: int} $filters
+     */
+    public function listTasks(array $filters = []): array
     {
-        return $this->client->request('POST', "send-mail/{$accountId}", [
-            'json' => $data,
-        ]);
-    }
-
-    public function listTasks(): array
-    {
-        return $this->client->request('GET', 'send-email-tasks');
+        return $this->client->request('GET', 'send-email-tasks', ['query' => $filters]);
     }
 
     public function getTask(int $taskId): array
@@ -33,5 +35,12 @@ class Mail
     public function deleteTask(int $taskId): array
     {
         return $this->client->request('DELETE', "send-email-task/{$taskId}");
+    }
+
+    public function downloadEml(int $taskId): string
+    {
+        return $this->client->requestRaw('GET', "send-email-task/{$taskId}/eml", [
+            'headers' => ['Accept' => 'message/rfc822'],
+        ]);
     }
 }

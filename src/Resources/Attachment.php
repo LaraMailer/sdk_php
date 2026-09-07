@@ -6,25 +6,29 @@ use LaraMailer\Sdk\Client;
 
 class Attachment
 {
-    protected Client $client;
+    public function __construct(protected Client $client) {}
 
-    public function __construct(Client $client)
+    public function upload(string $filePath, ?string $filename = null): array
     {
-        $this->client = $client;
+        return $this->uploadContents(
+            contents: (string) file_get_contents($filePath),
+            filename: $filename ?? basename($filePath),
+            contentType: mime_content_type($filePath) ?: null,
+        );
     }
 
-    public function upload(string $filePath, string $filename = null): array
+    public function uploadContents(string $contents, string $filename, ?string $contentType = null): array
     {
-        $options = [
-            'multipart' => [
-                [
-                    'name'     => 'file',
-                    'contents' => fopen($filePath, 'r'),
-                    'filename' => $filename ?? basename($filePath),
-                ],
-            ],
+        $part = [
+            'name' => 'file',
+            'contents' => $contents,
+            'filename' => $filename,
         ];
 
-        return $this->client->request('POST', 'attachments', $options);
+        if ($contentType !== null) {
+            $part['headers'] = ['Content-Type' => $contentType];
+        }
+
+        return $this->client->request('POST', 'attachments', ['multipart' => [$part]]);
     }
 }
