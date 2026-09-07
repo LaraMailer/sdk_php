@@ -1,27 +1,83 @@
-# LaraMailer PHP SDK
+# LaraMailer for Laravel
 
-A PHP SDK for interacting with the LaraMailer API.
+Laravel mail transport + PHP SDK for a LaraMailer instance.
 
 ## Installation
 
-You can install the package via composer:
+Until the package is on Packagist, add the repository to your app's `composer.json`:
 
-```bash
-composer require laramailer/sdk
+```json
+{
+    "repositories": [
+        { "type": "vcs", "url": "git@github.com:LaraMailer/sdk_php.git" }
+    ]
+}
 ```
 
-## Usage
+```bash
+composer require laramailer/laravel:@dev
+```
 
-Initialize the client with your API token and the domain of your LaraMailer instance.
+## Configuration
+
+`config/mail.php`:
 
 ```php
-use LaraMailer\Sdk\Client;
+'mailers' => [
+    'laramailer' => ['transport' => 'laramailer'],
+],
+```
 
-// Default API version is v1
-$client = new Client('YOUR_API_TOKEN', 'https://your-laramailer-instance.com');
+`.env`:
 
-// Or specify a version
-$client = new Client('YOUR_API_TOKEN', 'https://your-laramailer-instance.com', 'v2');
+```env
+MAIL_MAILER=laramailer
+LARAMAILER_ENDPOINT=https://mail.example.com
+LARAMAILER_TOKEN=your_access_token
+LARAMAILER_ACCOUNT_ID=1
+LARAMAILER_TRACKING_ENABLED=true
+```
+
+## Sending through Laravel Mail
+
+```php
+Mail::to($supplier->email)->send(
+    (new QuotationRequestMail($quotation))
+        ->metadata('contract_id', $contract->id)
+        ->metadata('procedure_id', $procedure->id)
+        ->metadata('user_id', auth()->id())
+        ->tag('quotation')
+);
+```
+
+- `metadata()` values are stored on the LaraMailer task and are filterable.
+- `tag()` values are joined into `metadata.tags`.
+- Custom header `X-Idempotency-Key` becomes the `Idempotency-Key` request header (safe retries).
+- Custom header `X-Tracking-Enabled: false` disables open/click tracking for that email.
+- `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
+
+## Reading history and proof
+
+```php
+use LaraMailer\Sdk\Facades\LaraMailer;
+
+$tasks = LaraMailer::mail()->listTasks(['metadata' => ['contract_id' => 42], 'status' => 'completed']);
+$task = LaraMailer::mail()->getTask($taskId);
+// $task['data']['sent_at'], ['smtp_response'], ['opened_at'], ['delivered_at'], ['tracking_events'], ['eml_url']
+
+$eml = LaraMailer::mail()->downloadEml($taskId); // raw RFC 822 message as sent
+```
+
+## Explicit send
+
+```php
+LaraMailer::mail()->send($accountId, [
+    'to' => [['email' => 'supplier@example.com', 'name' => 'Supplier']],
+    'subject' => 'Quotation request',
+    'html_body' => '<p>...</p>',
+    'text_body' => '...',
+    'metadata' => ['contract_id' => 42],
+], idempotencyKey: 'quotation-42-supplier-9');
 ```
 
 ### Accounts
@@ -47,31 +103,6 @@ $client->accounts()->update($accountId, [
 
 // Delete an account
 $client->accounts()->delete($accountId);
-```
-
-### Sending Mail
-
-```php
-// Send an email
-$response = $client->mail()->send($accountId, [
-    'to' => ['recipient@example.com'],
-    'subject' => 'Hello World',
-    'html_body' => '<h1>Hello!</h1><p>This is a test email.</p>',
-    'text_body' => 'Hello! This is a test email.', // Optional
-    'attachments' => [ // Optional
-        [
-            'path' => 'path/to/file.pdf', 
-            'name' => 'document.pdf',
-            'content_type' => 'application/pdf'
-        ]
-    ]
-]);
-
-// List email tasks
-$tasks = $client->mail()->listTasks();
-
-// Get specific task
-$task = $client->mail()->getTask($taskId);
 ```
 
 ### Attachments
