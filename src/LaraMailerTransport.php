@@ -182,6 +182,10 @@ class LaraMailerTransport extends AbstractTransport
         $attachments = [];
 
         foreach ($parts as $part) {
+            if ($part->getDisposition() === 'inline') {
+                continue;
+            }
+
             $filename = $part->getFilename() ?? 'attachment';
             $contentType = $part->getContentType();
 

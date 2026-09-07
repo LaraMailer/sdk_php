@@ -55,6 +55,8 @@ Mail::to($supplier->email)->send(
 - Custom header `X-Idempotency-Key` becomes the `Idempotency-Key` request header (safe retries).
 - Custom header `X-Tracking-Enabled: false` disables open/click tracking for that email.
 - `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
+- Embedded/inline images (`embed()`) are not forwarded; use absolute image URLs in HTML.
+- When the mailable sets no From address, LaraMailer uses the account's own address.
 
 ## Reading history and proof
 
