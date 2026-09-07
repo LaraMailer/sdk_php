@@ -13,7 +13,7 @@ class Attachment
         return $this->uploadContents(
             contents: (string) file_get_contents($filePath),
             filename: $filename ?? basename($filePath),
-            contentType: mime_content_type($filePath) ?: null,
+            contentType: $this->detectContentType($filePath),
         );
     }
 
@@ -30,5 +30,14 @@ class Attachment
         }
 
         return $this->client->request('POST', 'attachments', ['multipart' => [$part]]);
+    }
+
+    private function detectContentType(string $filePath): ?string
+    {
+        if (! function_exists('mime_content_type')) {
+            return null;
+        }
+
+        return mime_content_type($filePath) ?: null;
     }
 }
