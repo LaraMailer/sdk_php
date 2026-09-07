@@ -1,15 +1,29 @@
 {
-    "name": "laramailer/sdk",
-    "description": "PHP SDK for LaraMailer API",
+    "name": "laramailer/laravel",
+    "description": "Laravel mail transport and PHP SDK for LaraMailer",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "LaraMailer\\Sdk\": "src/"
+            "LaraMailer\\Sdk\\": "src/"
         }
     },
     "require": {
-        "php": "^8.1",
-        "guzzlehttp/guzzle": "^7.0"
-    }
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/support": "^11.0|^12.0",
+        "illuminate/mail": "^11.0|^12.0",
+        "symfony/mailer": "^7.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaraMailer\\Sdk\\LaraMailerServiceProvider"
+            ],
+            "aliases": {
+                "LaraMailer": "LaraMailer\\Sdk\\Facades\\LaraMailer"
+            }
+        }
+    },
+    "minimum-stability": "stable"
 }

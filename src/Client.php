@@ -17,16 +17,17 @@ class Client
     protected string $apiVersion;
     protected string $apiToken;
 
-    public function __construct(string $apiToken, string $domain = 'http://localhost', string $apiVersion = 'v1')
+    public function __construct(string $apiToken, string $domain = 'http://localhost', string $apiVersion = 'v1', int $timeout = 15)
     {
         $this->apiToken = $apiToken;
         $this->domain = rtrim($domain, '/');
         $this->apiVersion = $apiVersion;
-        
+
         $this->httpClient = new GuzzleClient([
-            'base_uri' => $this->domain . "/api/{$this->apiVersion}/",
+            'base_uri' => "{$this->domain}/api/{$this->apiVersion}/",
+            'timeout' => $timeout,
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->apiToken,
+                'Authorization' => "Bearer {$this->apiToken}",
                 'Accept' => 'application/json',
             ],
         ]);
