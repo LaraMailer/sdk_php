@@ -26,9 +26,11 @@ class LaraMailerServiceProvider extends ServiceProvider
             __DIR__.'/../config/laramailer.php' => config_path('laramailer.php'),
         ], 'laramailer-config');
 
-        Mail::extend('laramailer', function () {
+        $app = $this->app;
+
+        Mail::extend('laramailer', function () use ($app) {
             return new LaraMailerTransport(
-                client: $this->app->make(Client::class),
+                client: $app->make(Client::class),
                 accountId: (int) config('laramailer.account_id'),
                 trackingEnabled: (bool) config('laramailer.tracking_enabled', true),
             );
