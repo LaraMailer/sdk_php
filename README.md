@@ -61,7 +61,7 @@ Mail::to($supplier->email)->send(
 - Custom header `X-Send-At: 2026-09-10T08:00:00+01:00` schedules the send (up to 30 days ahead); the task is created with status `scheduled` and can be cancelled with `LaraMailer::mail()->deleteTask($id)` until it is dispatched.
 - `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
 - Embedded/inline images (`embed()`) are not forwarded; use absolute image URLs in HTML.
-- When the mailable sets no From address, LaraMailer uses the account's own address.
+- Emails are always sent from the account's own address. A From name in the mailable is kept as the display name; the From address itself is ignored.
 
 ## Reading history and proof
 
