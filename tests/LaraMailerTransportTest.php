@@ -156,4 +156,19 @@ class LaraMailerTransportTest extends PHPUnitTestCase
         $this->assertCount(1, $payload['attachments']);
         $this->assertSame('q.pdf', $payload['attachments'][0]['name']);
     }
+
+    public function test_x_send_at_header_becomes_send_at(): void
+    {
+        $client = $this->client([new Response(202, [], json_encode(['success' => true, 'data' => ['id' => 9, 'status' => 'scheduled']]))]);
+
+        $email = (new Email())->from('a@b.pt')->to('c@d.pt')->subject('S')->text('T');
+        $email->getHeaders()->addTextHeader('X-Send-At', '2026-09-10T08:00:00+01:00');
+
+        (new LaraMailerTransport($client, 5))->send($email);
+
+        $payload = json_decode((string) $this->requests[0]->getBody(), true);
+
+        $this->assertSame('2026-09-10T08:00:00+01:00', $payload['send_at']);
+        $this->assertArrayNotHasKey('X-Send-At', $payload['headers'] ?? []);
+    }
 }

@@ -61,6 +61,12 @@ class LaraMailerTransport extends AbstractTransport
                 continue;
             }
 
+            if ($name === 'x-send-at') {
+                $payload['send_at'] = trim($header->getBodyAsString());
+
+                continue;
+            }
+
             if ($name === 'x-tracking-enabled') {
                 $tracking = filter_var($header->getBodyAsString(), FILTER_VALIDATE_BOOLEAN);
 

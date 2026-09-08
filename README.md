@@ -58,6 +58,7 @@ Mail::to($supplier->email)->send(
 - `tag()` values are joined into `metadata.tags`.
 - Custom header `X-Idempotency-Key` becomes the `Idempotency-Key` request header (safe retries).
 - Custom header `X-Tracking-Enabled: false` disables open/click tracking for that email.
+- Custom header `X-Send-At: 2026-09-10T08:00:00+01:00` schedules the send (up to 30 days ahead); the task is created with status `scheduled` and can be cancelled with `LaraMailer::mail()->deleteTask($id)` until it is dispatched.
 - `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
 - Embedded/inline images (`embed()`) are not forwarded; use absolute image URLs in HTML.
 - When the mailable sets no From address, LaraMailer uses the account's own address.
@@ -84,6 +85,17 @@ LaraMailer::mail()->send($accountId, [
     'text_body' => '...',
     'metadata' => ['contract_id' => 42],
 ], idempotencyKey: 'quotation-42-supplier-9');
+```
+
+Add `send_at` (ISO 8601 with offset) to schedule the send instead of sending immediately:
+
+```php
+LaraMailer::mail()->send($accountId, [
+    'to' => [['email' => 'supplier@example.com', 'name' => 'Supplier']],
+    'subject' => 'Quotation request',
+    'html_body' => '<p>...</p>',
+    'send_at' => '2026-09-10T08:00:00+01:00',
+]);
 ```
 
 ## Sending with a template
