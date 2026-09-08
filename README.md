@@ -75,6 +75,10 @@ $task = LaraMailer::mail()->getTask($taskId);
 $eml = LaraMailer::mail()->downloadEml($taskId); // raw RFC 822 message as sent
 ```
 
+## Delivery status
+
+`getTask()` (and each entry from `listTasks()`) returns `delivery_status`, one of `accepted`, `delivered`, `delayed`, or `bounced` — updated as the server reads bounce notifications from the account's mailbox. When it is `bounced` or `delayed`, the task also carries `bounce_type`, `bounce_code`, `bounce_reason`, `bounce_recipient`, `bounced_at`, and a `bounce_events` list; `listTasks(['delivery_status' => 'bounced'])` filters by it.
+
 ## Explicit send
 
 ```php
