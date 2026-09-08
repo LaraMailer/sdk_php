@@ -127,3 +127,12 @@ $configs = $client->oauth2()->list();
 // Initiate OAuth2 flow
 $url = $client->oauth2()->initiate($configId);
 ```
+
+## Testing
+
+```bash
+composer install
+composer test
+```
+
+CI runs the suite on Orchestra Testbench across a matrix of Laravel 11, 12 and 13 (PHP 8.3 and 8.4) — see `.github/workflows/tests.yml`.
