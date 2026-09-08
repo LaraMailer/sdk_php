@@ -84,6 +84,25 @@ LaraMailer::mail()->send($accountId, [
 ], idempotencyKey: 'quotation-42-supplier-9');
 ```
 
+## Sending with a template
+
+Templates are authored and published in the LaraMailer dashboard (per team). Send data, not HTML:
+
+```php
+LaraMailer::mail()->sendTemplate(
+    accountId: 1,
+    template: 'quotation-request',
+    variables: ['ref' => 'CP/2026/17', 'deadline' => '2026-09-20', 'items' => [['name' => 'Paper', 'qty' => 10]]],
+    message: ['to' => [['email' => 'supplier@example.com']], 'metadata' => ['contract_id' => 42]],
+    idempotencyKey: 'quotation-42-supplier-9',
+);
+
+LaraMailer::templates()->list();
+LaraMailer::templates()->preview(1, ['ref' => 'CP/2026/17']);
+```
+
+Templates use Mustache syntax (`{{ref}}`, `{{#items}}…{{/items}}`, helpers `{{#date}}`, `{{#money}}`, `{{#upper}}`). Variables are validated against the template's schema; the task records the exact template version used. The Laravel mail transport is not involved — it always carries fully rendered mail.
+
 ### Accounts
 
 ```php

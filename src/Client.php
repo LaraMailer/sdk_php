@@ -10,6 +10,7 @@ use LaraMailer\Sdk\Resources\Account;
 use LaraMailer\Sdk\Resources\Attachment;
 use LaraMailer\Sdk\Resources\Mail;
 use LaraMailer\Sdk\Resources\OAuth2;
+use LaraMailer\Sdk\Resources\Templates;
 
 class Client
 {
@@ -66,6 +67,11 @@ class Client
     public function attachments(): Attachment
     {
         return new Attachment($this);
+    }
+
+    public function templates(): Templates
+    {
+        return new Templates($this);
     }
 
     /**

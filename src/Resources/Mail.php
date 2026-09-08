@@ -43,4 +43,13 @@ class Mail
             'headers' => ['Accept' => 'message/rfc822'],
         ]);
     }
+
+    /**
+     * @param  array<string, mixed>  $variables
+     * @param  array<string, mixed>  $message  to, cc, bcc, from, reply_to, metadata, tracking_enabled, ...
+     */
+    public function sendTemplate(int $accountId, string|int $template, array $variables, array $message, ?string $idempotencyKey = null): array
+    {
+        return $this->send($accountId, array_merge($message, ['template' => $template, 'variables' => $variables]), $idempotencyKey);
+    }
 }
