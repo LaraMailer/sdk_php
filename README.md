@@ -40,6 +40,8 @@ LARAMAILER_ACCOUNT_ID=1
 LARAMAILER_TRACKING_ENABLED=true
 ```
 
+`LARAMAILER_ACCOUNT_ID` may be the numeric account id or the UUID shown in the dashboard.
+
 ## Sending through Laravel Mail
 
 ```php

@@ -88,6 +88,19 @@ class LaraMailerTransportTest extends PHPUnitTestCase
         $this->assertSame([['path' => 'attachments/quotation.pdf', 'name' => 'quotation.pdf', 'content_type' => 'application/pdf']], $payload['attachments']);
     }
 
+    public function test_account_id_may_be_a_uuid(): void
+    {
+        $client = $this->client([new Response(202, [], json_encode(['success' => true, 'data' => ['id' => 1]]))]);
+
+        $email = (new Email())->from('a@b.pt')->to('c@d.pt')->subject('S')->text('T');
+
+        $uuid = '01a0819e-8170-73ab-8b1c-94ec32cb390c';
+
+        (new LaraMailerTransport($client, $uuid))->send($email);
+
+        $this->assertSame('/api/v1/send-mail/'.$uuid, $this->requests[0]->getUri()->getPath());
+    }
+
     public function test_tracking_defaults_from_constructor(): void
     {
         $client = $this->client([new Response(202, [], json_encode(['success' => true, 'data' => ['id' => 1]]))]);

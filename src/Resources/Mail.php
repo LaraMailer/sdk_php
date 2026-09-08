@@ -8,7 +8,7 @@ class Mail
 {
     public function __construct(protected Client $client) {}
 
-    public function send(int $accountId, array $data, ?string $idempotencyKey = null): array
+    public function send(string|int $accountId, array $data, ?string $idempotencyKey = null): array
     {
         $options = ['json' => $data];
 
@@ -48,7 +48,7 @@ class Mail
      * @param  array<string, mixed>  $variables
      * @param  array<string, mixed>  $message  to, cc, bcc, from, reply_to, metadata, tracking_enabled, ...
      */
-    public function sendTemplate(int $accountId, string|int $template, array $variables, array $message, ?string $idempotencyKey = null): array
+    public function sendTemplate(string|int $accountId, string|int $template, array $variables, array $message, ?string $idempotencyKey = null): array
     {
         return $this->send($accountId, array_merge($message, ['template' => $template, 'variables' => $variables]), $idempotencyKey);
     }

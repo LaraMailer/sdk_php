@@ -31,7 +31,7 @@ class LaraMailerServiceProvider extends ServiceProvider
         Mail::extend('laramailer', function () use ($app) {
             return new LaraMailerTransport(
                 client: $app->make(Client::class),
-                accountId: (int) config('laramailer.account_id'),
+                accountId: (string) config('laramailer.account_id'),
                 trackingEnabled: (bool) config('laramailer.tracking_enabled', true),
             );
         });

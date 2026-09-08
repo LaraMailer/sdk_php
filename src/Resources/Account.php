@@ -25,19 +25,19 @@ class Account
         ]);
     }
 
-    public function get(int $id): array
+    public function get(string|int $id): array
     {
         return $this->client->request('GET', "account/{$id}");
     }
 
-    public function update(int $id, array $data): array
+    public function update(string|int $id, array $data): array
     {
         return $this->client->request('PUT', "account/{$id}", [
             'json' => $data,
         ]);
     }
 
-    public function delete(int $id): array
+    public function delete(string|int $id): array
     {
         return $this->client->request('DELETE', "account/{$id}");
     }

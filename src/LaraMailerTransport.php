@@ -21,7 +21,7 @@ class LaraMailerTransport extends AbstractTransport
 
     public function __construct(
         private Client $client,
-        private int $accountId,
+        private string|int $accountId,
         private bool $trackingEnabled = true,
     ) {
         parent::__construct();
