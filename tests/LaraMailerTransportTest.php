@@ -157,6 +157,21 @@ class LaraMailerTransportTest extends PHPUnitTestCase
         $this->assertSame('q.pdf', $payload['attachments'][0]['name']);
     }
 
+    public function test_x_dry_run_header_becomes_dry_run(): void
+    {
+        $client = $this->client([new Response(202, [], json_encode(['success' => true, 'data' => ['id' => 10, 'status' => 'pending', 'dry_run' => true]]))]);
+
+        $email = (new Email())->from('a@b.pt')->to('c@d.pt')->subject('S')->text('T');
+        $email->getHeaders()->addTextHeader('X-Dry-Run', '1');
+
+        (new LaraMailerTransport($client, 5))->send($email);
+
+        $payload = json_decode((string) $this->requests[0]->getBody(), true);
+
+        $this->assertTrue($payload['dry_run']);
+        $this->assertArrayNotHasKey('X-Dry-Run', $payload['headers'] ?? []);
+    }
+
     public function test_x_send_at_header_becomes_send_at(): void
     {
         $client = $this->client([new Response(202, [], json_encode(['success' => true, 'data' => ['id' => 9, 'status' => 'scheduled']]))]);

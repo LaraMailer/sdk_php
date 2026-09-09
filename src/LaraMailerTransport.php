@@ -61,6 +61,12 @@ class LaraMailerTransport extends AbstractTransport
                 continue;
             }
 
+            if ($name === 'x-dry-run') {
+                $payload['dry_run'] = filter_var(trim($header->getBodyAsString()), FILTER_VALIDATE_BOOLEAN);
+
+                continue;
+            }
+
             if ($name === 'x-send-at') {
                 $payload['send_at'] = trim($header->getBodyAsString());
 

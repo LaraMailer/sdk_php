@@ -58,6 +58,7 @@ Mail::to($supplier->email)->send(
 - `tag()` values are joined into `metadata.tags`.
 - Custom header `X-Idempotency-Key` becomes the `Idempotency-Key` request header (safe retries).
 - Custom header `X-Tracking-Enabled: false` disables open/click tracking for that email.
+- Custom header `X-Dry-Run: 1` makes the send a dry run: the message is built and stored (and delivered to the server's dry-run sink such as Mailpit when one is configured) but never reaches the recipients. An account can also be switched to permanent dry run in the LaraMailer dashboard, which applies to every send regardless of this header. Explicit SDK: `'dry_run' => true` in `$data`.
 - Custom header `X-Send-At: 2026-09-10T08:00:00+01:00` schedules the send (up to 30 days ahead); the task is created with status `scheduled` and can be cancelled with `LaraMailer::mail()->deleteTask($id)` until it is dispatched.
 - `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
 - Embedded/inline images (`embed()`) are not forwarded; use absolute image URLs in HTML.
