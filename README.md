@@ -59,6 +59,20 @@ Mail::to($supplier->email)->send(
 - Custom header `X-Idempotency-Key` becomes the `Idempotency-Key` request header (safe retries).
 - Custom header `X-Tracking-Enabled: false` disables open/click tracking for that email.
 - Custom header `X-Dry-Run: 1` makes the send a dry run: the message is built and stored (and delivered to the server's dry-run sink such as Mailpit when one is configured) but never reaches the recipients. An account can also be switched to permanent dry run in the LaraMailer dashboard, which applies to every send regardless of this header. Explicit SDK: `'dry_run' => true` in `$data`.
+- `Mail::send()` returns the `SentMessage` whose `getMessageId()` is the **LaraMailer task id**, so a caller can store it and follow the message later:
+
+  ```php
+  $sent = Mail::mailer('laramailer')->to($supplier->email)->send(new QuotationRequestMail($request));
+  $request->update(['laramailer_task_id' => $sent?->getMessageId()]);
+
+  // later, for monitoring
+  $task = LaraMailer::mail()->getTask((int) $request->laramailer_task_id);
+  $task['data']['status'];          // pending|processing|completed|failed|cancelled|scheduled
+  $task['data']['delivery_status']; // accepted|delivered|delayed|bounced
+  $task['data']['message_id'];      // the RFC Message-ID, once the send has actually run
+  ```
+
+  The task id exists immediately; the RFC `Message-ID` only appears after the queued send runs, which is why the task id is the handle to store. `Mail::queue()` returns nothing, so use `Mail::send()` (or the explicit SDK call, whose response carries `data.id`) when you need the id.
 - Custom header `X-Send-At: 2026-09-10T08:00:00+01:00` schedules the send (up to 30 days ahead); the task is created with status `scheduled` and can be cancelled with `LaraMailer::mail()->deleteTask($id)` until it is dispatched.
 - `Mail::send()` returns a `SentMessage`; `getMessageId()` is the LaraMailer task id.
 - Embedded/inline images (`embed()`) are not forwarded; use absolute image URLs in HTML.
