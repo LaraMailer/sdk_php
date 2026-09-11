@@ -6,18 +6,8 @@ Laravel mail transport + PHP SDK for a LaraMailer instance.
 
 Requires PHP 8.2+ and Laravel 11, 12 or 13.
 
-Until the package is on Packagist, add the repository to your app's `composer.json`:
-
-```json
-{
-    "repositories": [
-        { "type": "vcs", "url": "git@github.com:LaraMailer/sdk_php.git" }
-    ]
-}
-```
-
 ```bash
-composer require laramailer/laravel:@dev
+composer require laramailer/laravel
 ```
 
 ## Configuration
